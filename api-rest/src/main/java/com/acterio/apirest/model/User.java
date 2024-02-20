@@ -3,7 +3,7 @@ package com.acterio.apirest.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name="user")
+@Table(name="userlogin")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
