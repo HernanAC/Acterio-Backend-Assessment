@@ -6,7 +6,10 @@ import com.acterio.apirest.model.User;
 import com.acterio.apirest.repository.UserRepository;
 import com.acterio.apirest.response.LoginResponse;
 import com.acterio.apirest.service.UserService;
+import org.hibernate.annotations.DialectOverride;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +23,7 @@ public class UserImpl implements UserService {
 
     @Override
     public String addUser(UserDTO userDTO) {
+
         User user = new User(
                 userDTO.getId(),
                 userDTO.getFirstName(),
@@ -27,9 +31,21 @@ public class UserImpl implements UserService {
                 userDTO.getEmail(),
                 this.passwordEncoder.encode(userDTO.getPassword())
         );
-        userRepository.save(user);
-        return user.getFirstName();
+        User user2 = userRepository.findByEmail(userDTO.getEmail());
+        if(user2 != null) {
+            return ("Email already registered");
+        } else {
+            userRepository.save(user);
+            return user.getFirstName();
+        }
+
     }
+    @Override
+    public void deleteUser(Long id){
+        userRepository.deleteById(id);
+    }
+
+
 
     @Override
     public LoginResponse loginUser(LoginDTO loginDTO) {
@@ -42,15 +58,15 @@ public class UserImpl implements UserService {
             if (isPwdRight) {
                 Optional<User> user = userRepository.findOneByEmailAndPassword(loginDTO.getEmail(), encodedPassword);
                 if (user.isPresent()) {
-                    return new LoginResponse("Login Success", true);
+                    return new LoginResponse("You are logged in!", true);
                 } else {
-                    return new LoginResponse("Login Failed", false);
+                    return new LoginResponse("Something wrong happened", false);
                 }
             } else {
-                return new LoginResponse("password Not Match", false);
+                return new LoginResponse("Password is incorrect. Try again please.", false);
             }
         }else {
-            return new LoginResponse("Email not exits", false);
+            return new LoginResponse("Email not found. Try again please.", false);
         }
     }
 }

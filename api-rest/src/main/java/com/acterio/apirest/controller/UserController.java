@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin
 @RequestMapping("api/user")
@@ -27,4 +29,16 @@ public class UserController {
         LoginResponse loginResponse = userService.loginUser(loginDTO);
         return ResponseEntity.ok(loginResponse);
     }
+
+    @DeleteMapping("/delete/{id}")
+    public void deleteById(@PathVariable("id") Long id) {
+        userService.deleteUser(id);
+    }
+/*
+    @GetMapping("/departments")
+    public List<String> getCount() {
+        return userService.getEmailCount();
+    }*/
+
+
 }
