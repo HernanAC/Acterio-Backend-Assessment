@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 @Service
 public class UserImpl implements UserService {
@@ -20,7 +22,8 @@ public class UserImpl implements UserService {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
-
+    public List<String> usersEmails = new ArrayList<>();
+    public List<String> usersEmailsId = new ArrayList<>();
     @Override
     public String addUser(UserDTO userDTO) {
 
@@ -36,13 +39,46 @@ public class UserImpl implements UserService {
             return ("Email already registered");
         } else {
             userRepository.save(user);
+            usersEmails.add(user.getEmail());
+            usersEmailsId.add(user.getId().toString());
             return user.getFirstName();
         }
 
     }
     @Override
     public void deleteUser(Long id){
+        for(int i = 0; i < usersEmails.size(); i++){
+            if( usersEmailsId.get(i).equals(id.toString())){
+                usersEmailsId.remove(i);
+                usersEmails.remove(i);
+            }
+        }
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public List<String> showEmailsCount(){
+        List<String> finalEmails = new ArrayList<>();
+        int countGmail = 0;
+        int countHotmail = 0;
+        int countOutlook = 0;
+        int countOther = 0;
+        for(int i = 0; i < usersEmails.size(); i++){
+            if( usersEmails.get(i).contains("@gmail.com")   ){
+                countGmail++;
+            } else if( usersEmails.get(i).contains("@hotmail.com")   ){
+                countHotmail++;
+            } else if( usersEmails.get(i).contains("@outlook.com")   ){
+                countOutlook++;
+            } else{
+                countOther++;
+            }
+        }
+        finalEmails.add("Count of gmail: " + countGmail);
+        finalEmails.add("Count of hotmail: " + countHotmail);
+        finalEmails.add("Count of outlook: " + countOutlook);
+        finalEmails.add("Count of other: " + countOther);
+        return finalEmails;
     }
 
 

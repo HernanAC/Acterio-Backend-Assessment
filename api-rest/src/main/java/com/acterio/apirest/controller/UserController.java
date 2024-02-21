@@ -34,11 +34,11 @@ public class UserController {
     public void deleteById(@PathVariable("id") Long id) {
         userService.deleteUser(id);
     }
-/*
-    @GetMapping("/departments")
+
+    @GetMapping("/count")
     public List<String> getCount() {
-        return userService.getEmailCount();
-    }*/
+        return userService.showEmailsCount();
+    }
 
 
 }
